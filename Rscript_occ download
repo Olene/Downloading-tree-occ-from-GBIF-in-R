@@ -1,0 +1,30 @@
+# packages for gbif
+install.packages("dplyr")
+install.packages("rgbif")
+
+library(dplyr)
+library(rgbif)
+
+# download gbif data
+options(gbif_user="YOUR USER NAME HERE")
+options(gbif_pwd="YOUR PASSWORD HERE")
+options(gbif_email="YOUR EMAIL HERE")
+
+occ_download(pred_in("taxonKey", c(3189866, 5352251, 2959443, 3190653, 2880539, 2878688, 3189846, 5331916, 2882316, 3172358)), pred("country", "UA"), format = "SIMPLE_CSV")
+
+tree <- occ_download_get("0038628-241126133413365", overwrite = TRUE) # insert download key in ""
+tree <- occ_download_import(tree)
+
+# Select necessary column ("species", "decimalLatitude", "decimalLongitude") from dataframe downloaded from GBIF
+tree_n <- tree %>% select(species, decimalLatitude, decimalLongitude)
+
+# Delate NA's in dataframe
+tree_final <- na.omit(tree_n)
+
+# Remove duplicate value in dataframe
+tree_fin <- unique(tree_final)
+
+# Write .csv file (optional)
+write.csv(tree_fin, "tree_m.csv")
+
+
